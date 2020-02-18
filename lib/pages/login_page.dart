@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:monsieur_people/models/user_model.dart';
+import 'package:monsieur_people/pages/chatbot_page.dart';
+import 'package:monsieur_people/widgets/generic_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -6,74 +12,148 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+//  Color _loginButtonColor = Colors.deepPurple;
+
+  bool _isLoading = false;
+  bool error = false;
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(36.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+        appBar: AppBar(
+          title: Text('Login'),
+          centerTitle: true,
+        ),
+        body: _bodyDependingOnLoading());
+  }
+
+  _textFieldBorder({bool isFocused = false}) {
+    return OutlineInputBorder(
+        borderSide: BorderSide(
+            color: isFocused ? Colors.lightBlue : Colors.blue, width: 1));
+  }
+
+  Widget _bodyDependingOnLoading() {
+    if (_isLoading) {
+      return _progressIndicator();
+    } else {
+      return _contentLoginForm();
+    }
+  }
+
+  Widget _progressIndicator() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  Widget _contentLoginForm() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              height: 32,
+            ),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  height: 155.0,
-                  child: Image.asset(
-                    "assets/logo.png",
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                SizedBox(height: 45.0),
-                TextField(
-                  obscureText: false,
-                  style: style,
-                  decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintText: "Email",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(32.0))),
-                ),
-                SizedBox(height: 25.0),
-                TextField(
-                  obscureText: true,
-                  style: style,
-                  decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintText: "Password",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(32.0))),
-                ),
-                SizedBox(
-                  height: 35.0,
-                ),
-                Material(
-                  elevation: 5.0,
-                  borderRadius: BorderRadius.circular(30.0),
-                  color: Color(0xff01A0C7),
-                  child: MaterialButton(
-                    minWidth: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                    onPressed: () {},
-                    child: Text("Login",
-                        textAlign: TextAlign.center,
-                        style: style.copyWith(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SizedBox(
-                  height: 15.0,
+                Icon(
+                  Icons.account_circle,
+                  size: 48,
+                  color: Colors.blue.withOpacity(0.6),
                 ),
               ],
             ),
-          ),
+            Container(
+              height: 16,
+            ),
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Username',
+                  focusedBorder: _textFieldBorder(),
+                  enabledBorder: _textFieldBorder()),
+            ),
+            Container(
+              height: 16,
+            ),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Password',
+                  focusedBorder: _textFieldBorder(),
+                  enabledBorder: _textFieldBorder()),
+            ),
+            Container(
+              height: 32,
+            ),
+            GenericButtonWidget('Login', _loginPressed),
+            Container(
+              height: 16,
+            ),
+            Row(
+              children: <Widget>[
+                error == true ? Text('Wrong identity') : Container()
+              ],
+            )
+            //            GestureDetector(
+//                onTapDown: (detail) {
+//                  setState(() {
+//                    _loginButtonColor = Colors.red;
+//                  });
+//                },
+//                onTapCancel: () {
+//                  setState(() {
+//                    _loginButtonColor = Colors.deepPurple;
+//                  });
+//                },
+//                onTapUp: (detail) {
+//                  setState(() {
+//                    _loginButtonColor = Colors.deepPurple;
+//                  });
+//                },
+////                child: StaticLoginButtonWidget(_loginButtonColor))
+//                child: LoginButtonWidget())
+          ],
         ),
       ),
     );
+  }
+
+  _loginPressed() async {
+    print('Login pressed');
+    setState(() {
+      error = false;
+      _isLoading = true;
+    });
+
+    await Future.delayed(Duration(seconds: 1));
+
+    String username = _usernameController.text;
+    String password = _passwordController.text;
+    if (username == 'admin' && password == 'password') {
+      User user = User(username, password);
+      print(user.toJSON());
+      String encodedJSON = jsonEncode((user.toJSON()));
+      print(encodedJSON);
+
+      //save to shared preferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('user', encodedJSON);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => ChatBotPage()));
+    } else {
+      setState(() {
+        _isLoading = false;
+        error = true;
+      });
+    }
   }
 }
