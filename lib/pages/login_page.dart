@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monsieur_people/models/user_model.dart';
 import 'package:monsieur_people/pages/chatbot_page.dart';
@@ -21,12 +22,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Login'),
-          centerTitle: true,
-        ),
-        body: _bodyDependingOnLoading());
+    return Scaffold(body: _bodyDependingOnLoading());
   }
 
   _textFieldBorder({bool isFocused = false}) {
@@ -61,10 +57,11 @@ class _LoginPageState extends State<LoginPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
-                  Icons.account_circle,
-                  size: 48,
-                  color: Colors.blue.withOpacity(0.6),
+                Image.asset(
+                  "assets/logo.png",
+                  width: 250,
+                  height: 150,
+                  fit: BoxFit.fill,
                 ),
               ],
             ),
@@ -75,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               controller: _usernameController,
               decoration: InputDecoration(
                   isDense: true,
-                  labelText: 'Username',
+                  labelText: 'Email',
                   focusedBorder: _textFieldBorder(),
                   enabledBorder: _textFieldBorder()),
             ),
