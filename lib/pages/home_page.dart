@@ -28,11 +28,11 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _currentIndex, // new
         items: [
           new BottomNavigationBarItem(
-            icon: Image.asset('assets/icoEvent.png', height: 50),
+            icon: Image.asset('assets/icoInfos.png', height: 50),
             title: Text(''),
           ),
           new BottomNavigationBarItem(
-            icon: Image.asset('assets/icoInfos.png', height: 50),
+            icon: Image.asset('assets/icoEvent.png', height: 50),
             title: Text(''),
           ),
           new BottomNavigationBarItem(
