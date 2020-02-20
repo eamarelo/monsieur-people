@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monsieur_people/models/user_model.dart';
-import 'package:monsieur_people/pages/chatbot_page.dart';
+import 'package:monsieur_people/pages/home_page.dart';
 import 'package:monsieur_people/widgets/generic_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -100,24 +100,6 @@ class _LoginPageState extends State<LoginPage> {
                 error == true ? Text('Wrong identity') : Container()
               ],
             )
-            //            GestureDetector(
-//                onTapDown: (detail) {
-//                  setState(() {
-//                    _loginButtonColor = Colors.red;
-//                  });
-//                },
-//                onTapCancel: () {
-//                  setState(() {
-//                    _loginButtonColor = Colors.deepPurple;
-//                  });
-//                },
-//                onTapUp: (detail) {
-//                  setState(() {
-//                    _loginButtonColor = Colors.deepPurple;
-//                  });
-//                },
-////                child: StaticLoginButtonWidget(_loginButtonColor))
-//                child: LoginButtonWidget())
           ],
         ),
       ),
@@ -137,15 +119,14 @@ class _LoginPageState extends State<LoginPage> {
     String password = _passwordController.text;
     if (username == 'admin' && password == 'password') {
       User user = User(username, password);
-      print(user.toJSON());
       String encodedJSON = jsonEncode((user.toJSON()));
-      print(encodedJSON);
+      print("--------------------- " + encodedJSON);
 
       //save to shared preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('user', encodedJSON);
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => ChatBotPage()));
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       setState(() {
         _isLoading = false;
