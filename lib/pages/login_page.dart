@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:monsieur_people/models/user_model.dart';
 import 'package:monsieur_people/pages/home_page.dart';
 import 'package:monsieur_people/widgets/generic_button.dart';
@@ -19,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   bool error = false;
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  User _currentCat;
 
   @override
   Widget build(BuildContext context) {
@@ -117,14 +119,18 @@ class _LoginPageState extends State<LoginPage> {
 
     String username = _usernameController.text;
     String password = _passwordController.text;
-    if (username == 'admin' && password == 'password') {
-      User user = User(username, password);
-      String encodedJSON = jsonEncode((user.toJSON()));
-      print("--------------------- " + encodedJSON);
-
+    var url = 'http://3.92.227.229/login';
+    var response =
+        await http.post(url, body: {"email": username, "password": password});
+    Map<String, dynamic> user = jsonDecode(response.body);
+    print('Howdy, ${user['token']}!');
+    if (user['token'].length != 0) {
+      String encodedJSON = jsonEncode(user['token']);
       //save to shared preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('user', encodedJSON);
+      String stringValue = prefs.getString('user');
+      print("---------" + stringValue);
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
