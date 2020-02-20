@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class ChatBotPage extends StatefulWidget {
   ChatBotPage({Key key, this.title}) : super(key: key);
@@ -42,16 +46,75 @@ class _ChatBotPage extends State<ChatBotPage> {
     );
   }
 
-  void _handleSubmitted(String text) {
+  void initState() {
+    var messageTest = "";
+    super.initState();
+    final storage = new FlutterSecureStorage();
+//    storage() async {
+//      final storage = new FlutterSecureStorage();
+//      String value = await storage.read(key: 'user');
+//      return value;
+//    }
+    () async {
+      String value = await storage.read(key: 'user');
+
+      var url = 'http://3.92.227.229/bot';
+      var toto = await http.post(
+        url,
+        body: {"question": "bonjour"},
+        headers: {"x-access-token": value},
+      );
+      Map<String, dynamic> user = jsonDecode(toto.body);
+      messageTest = user['message'];
+      print('Howdy, ${user['message']}!');
+      setState(() {
+        ChatMessage message = new ChatMessage(
+          text: messageTest,
+          name: "Paul",
+          type: false,
+        );
+        _messages.insert(0, message);
+      });
+    }();
+  }
+
+  void Response(query) async {
     _textController.clear();
     ChatMessage message = new ChatMessage(
-      text: text,
-      name: "Promise",
-      type: true,
+      text: query,
+      name: "Paul",
+      type: false,
     );
     setState(() {
       _messages.insert(0, message);
     });
+  }
+
+  void _handleSubmitted(String text) {
+    var messageTest = "";
+    _textController.clear();
+    final storage = new FlutterSecureStorage();
+    () async {
+      String value = await storage.read(key: 'user');
+      var url = 'http://3.92.227.229/bot';
+      var toto = await http.post(
+        url,
+        body: {"question": text},
+        headers: {"x-access-token": value},
+      );
+      Map<String, dynamic> user = jsonDecode(toto.body);
+      messageTest = user['message'];
+      print('Howdy, ${user['message']}!');
+      setState(() {
+        ChatMessage message = new ChatMessage(
+          text: text,
+          name: "Promise",
+          type: true,
+        );
+        _messages.insert(0, message);
+      });
+      Response(messageTest);
+    }();
   }
 
   @override
