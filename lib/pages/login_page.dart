@@ -123,14 +123,14 @@ class _LoginPageState extends State<LoginPage> {
     var response =
         await http.post(url, body: {"email": username, "password": password});
     Map<String, dynamic> user = jsonDecode(response.body);
-    print('Howdy, ${user['token']}!');
+
     if (user['token'].length != 0) {
       String encodedJSON = jsonEncode(user['token']);
       //save to shared preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('user', encodedJSON);
+      prefs.setString('user', user['token']);
       String stringValue = prefs.getString('user');
-      print("---------" + stringValue);
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {

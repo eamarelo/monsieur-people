@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatBotPage extends StatefulWidget {
   ChatBotPage({Key key, this.title}) : super(key: key);
@@ -56,8 +57,8 @@ class _ChatBotPage extends State<ChatBotPage> {
 //      return value;
 //    }
     () async {
-      String value = await storage.read(key: 'user');
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String value = await prefs.getString('user');
       var url = 'http://3.92.227.229/bot';
       var toto = await http.post(
         url,
@@ -95,7 +96,8 @@ class _ChatBotPage extends State<ChatBotPage> {
     _textController.clear();
     final storage = new FlutterSecureStorage();
     () async {
-      String value = await storage.read(key: 'user');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String value = await prefs.getString('user');
       var url = 'http://3.92.227.229/bot';
       var toto = await http.post(
         url,
