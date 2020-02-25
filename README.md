@@ -1,16 +1,18 @@
-# monsieur_people
+# Monsieur People
 
-The front end of the application monsieur-people
+<div style="text-align:center"><img src="./assets/logo.png" width="250"></div>.
+This repository contains the front-end of the application Monsieur People.
+This repository is opened for the My Digital School's hackathon.
 
-## Getting Started
+## Prerequisites
 
-This project is a starting point for a Flutter application.
+- Install Android Studio : https://developer.android.com/studio
+- Clone this repository : https://github.com/eamarelo/monsieur-people.git ( You have to put it in your Android Studio directory )
+- Config your SDK , refer to the documentation
+- Install an AVD or connect your phone to your PC
+- Install dependencies ( install get in your pubspec.yaml)
 
-A few resources to get you started if this is your first Flutter project:
+## Run It
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Select your virtual device
+- type `flutter run` In your console in the direcotry of your project.
